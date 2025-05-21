@@ -1,0 +1,79 @@
+<!-- Gs script for pi chart creation -->
+
+<!-- function doGet() {
+  // Return JSON of Remark counts
+  var counts = getRemarkCounts();
+  
+  return ContentService.createTextOutput(JSON.stringify(counts))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getRemarkCounts() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1');
+  var data = sheet.getDataRange().getValues();
+
+  var headers = data[0];
+  var remarkColIndex = headers.indexOf('remark');
+  if (remarkColIndex === -1) {
+    throw new Error("Column 'Remark' not found");
+  }
+
+  var counts = {};
+  for (var i = 1; i < data.length; i++) {
+    var remark = data[i][remarkColIndex];
+    if (remark) {
+      counts[remark] = (counts[remark] || 0) + 1;
+    }
+  }
+
+  var chartData = [['Remark', 'Count']];
+  for (var key in counts) {
+    chartData.push([key, counts[key]]);
+  }
+  return chartData;
+} -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pie Chart Remark</title>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script>
+    google.charts.load('current', {packages: ['corechart']});
+
+    // Replace with your Apps Script web app URL here:
+    const dataUrl = 'https://script.google.com/macros/s/AKfycbx7m89DEbsfcW0OnczWfhF3YDkJB-vfewHOgj1f8Kyn2oLQm5ReuvKm_b4x0txApPGF/exec';
+
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      fetch(dataUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (data.length <= 1) {
+            document.getElementById('piechart').innerText = 'No Remark data found.';
+            return;
+          }
+          const dataTable = google.visualization.arrayToDataTable(data);
+
+          const options = {
+            title: 'Remark Distribution',
+            pieHole: 0.4,
+            width: 600,
+            height: 400
+          };
+
+          const chart = new google.visualization.PieChart(document.getElementById('piechart'));
+          chart.draw(dataTable, options);
+        })
+        .catch(err => {
+          document.getElementById('piechart').innerText = 'Error fetching data: ' + err;
+        });
+    }
+  </script>
+</head>
+<body>
+  <h2>Pie Chart of Remark (Local HTML)</h2>
+  <div id="piechart"></div>
+</body>
+</html>
