@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASHWAGRID</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <img src="ashwa.png" alt="Ashwagrid Logo" class="logo" />
+    <form class="login-form">
+      <input type="text" placeholder="Username" class="input-field" required />
+      <!-- <input type="password" placeholder="Password" id="password" class="input-field" required />
+      <button onclick="togglePassword">Show</button> -->
+      <div class="password-wrapper">
+        <input type="password" placeholder="Password" id="password" class="input-field" required />
+        <button type="button" class="toggle-password" onclick="togglePassword()">Show</button>
+      </div>
+      <button type="submit" class="login-button">Login</button>
+      
+      <p class="error" id="errormsg"></p>
+    </form>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const passwordField = document.getElementById("password");
+      const toggleBtn = document.querySelector(".toggle-password");
+
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleBtn.textContent = "Hide";
+      } else {
+        passwordField.type = "password";
+        toggleBtn.textContent = "Show";
+      }
+    }
+
+    document.querySelector(".login-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const email = document.querySelector('input[placeholder="Username"]').value;
+      const password = document.querySelector('input[placeholder="Password"]').value;
+
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+
+      try {
+        const res = await fetch("auth.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          alert("Login successful! Welcome " + result.name);
+          window.location.href = "dashboard.php";
+        } else {
+          document.getElementById('errormsg').innerText = "Login Failed";
+          // alert("Login failed: " + result.message);
+        }
+      } catch (error) {
+        document.getElementById('errormsg').innerText = "Error connecting to server.";
+        // alert("Error connecting to server. Please try again.");
+        // console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
